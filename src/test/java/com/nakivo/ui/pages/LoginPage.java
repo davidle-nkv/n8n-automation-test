@@ -53,18 +53,18 @@ public class LoginPage {
     }
     
     public String getErrorMessageText() {
-        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
-        return error.getText();
+        try {
+            WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+            return error.getText();
+        } catch (Exception e) {
+            return "";
+        }
     }
     
     public boolean isOnDashboard() {
         try {
-            wait.until(ExpectedConditions.or(
-                ExpectedConditions.urlContains("/dashboard"),
-                ExpectedConditions.urlContains("/home"),
-                ExpectedConditions.urlContains("/c/")
-            ));
-            return !driver.getCurrentUrl().contains("/login");
+            wait.until(ExpectedConditions.urlContains("/dashboard"));
+            return true;
         } catch (Exception e) {
             return false;
         }
