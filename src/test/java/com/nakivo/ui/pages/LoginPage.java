@@ -56,17 +56,4 @@ public class LoginPage {
         WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
         return error.getText();
     }
-    
-    public boolean isOnDashboard() {
-        try {
-            wait.until(ExpectedConditions.urlContains("/dashboard"));
-            return driver.getCurrentUrl().contains("/dashboard");
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    public String getCurrentUrl() {
-        return driver.getCurrentUrl();
-    }
 }
