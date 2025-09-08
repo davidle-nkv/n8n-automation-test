@@ -27,19 +27,19 @@ public class LoginTest {
         loginPage = new LoginPage(driver);
     }
     
-    @Test(description = "Test Case 1: Successful login")
+    @Test(description = "Test Case 1: Successful login with valid credentials")
     public void testSuccessfulLogin() {
         loginPage.navigateToLoginPage(LOGIN_URL);
         loginPage.enterUsername("user");
         loginPage.enterPassword("user");
         loginPage.clickLoginButton();
         
-        Assert.assertTrue(loginPage.isOnDashboardPage(), 
-            "User should be redirected to dashboard page after successful login");
+        Assert.assertTrue(loginPage.isOnDashboard(), 
+            "User should be redirected to dashboard after successful login");
     }
     
     @Test(description = "Test Case 2: Unsuccessful login with invalid credentials")
-    public void testUnsuccessfulLoginInvalidCredentials() {
+    public void testUnsuccessfulLogin() {
         loginPage.navigateToLoginPage(LOGIN_URL);
         loginPage.enterUsername("wronguser");
         loginPage.enterPassword("wrongpassword");
@@ -49,10 +49,9 @@ public class LoginTest {
             "Error message should be displayed for invalid credentials");
         
         String errorText = loginPage.getErrorMessageText();
-        Assert.assertTrue(errorText.contains("Invalid credentials") || 
-            errorText.toLowerCase().contains("invalid") || 
-            errorText.toLowerCase().contains("incorrect"),
-            "Error message should contain 'Invalid credentials' or similar text");
+        Assert.assertTrue(errorText.toLowerCase().contains("invalid") || 
+            errorText.toLowerCase().contains("credentials"), 
+            "Error message should contain 'Invalid credentials'");
     }
     
     @AfterMethod
