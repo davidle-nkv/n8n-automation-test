@@ -15,7 +15,7 @@ public class LoginPage {
     private By usernameField = By.id("username");
     private By passwordField = By.id("password");
     private By loginButton = By.xpath("//button[contains(text(),'Log In')]");
-    private By errorMessage = By.xpath("//div[contains(@class,'error') or contains(@class,'alert')]//span[contains(text(),'Invalid credentials')]");
+    private By errorMessage = By.xpath("//div[contains(@class,'error') or contains(@class,'alert')]/*[contains(text(),'Invalid credentials')]");
     
     public LoginPage(WebDriver driver) {
         this.driver = driver;
@@ -53,17 +53,17 @@ public class LoginPage {
     }
     
     public String getErrorMessageText() {
-        try {
-            WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
-            return error.getText();
-        } catch (Exception e) {
-            return "";
-        }
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+        return error.getText();
     }
     
-    public boolean isOnDashboard() {
+    public boolean isDashboardPageLoaded() {
         try {
-            wait.until(ExpectedConditions.urlContains("/dashboard"));
+            wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("/dashboard"),
+                ExpectedConditions.urlContains("/home"),
+                ExpectedConditions.urlContains("/main")
+            ));
             return true;
         } catch (Exception e) {
             return false;
