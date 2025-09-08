@@ -14,15 +14,15 @@ public class LoginPage {
     // Locators
     private By usernameField = By.id("username");
     private By passwordField = By.id("password");
-    private By loginButton = By.xpath("//button[contains(text(), 'Log In')]");
-    private By errorMessage = By.className("error-message");
+    private By loginButton = By.xpath("//button[contains(text(),'Log In')]");
+    private By errorMessage = By.xpath("//div[contains(@class,'error') or contains(@class,'alert')]//span[contains(text(),'Invalid credentials')]");
     
     public LoginPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
     
-    public void openLoginPage(String url) {
+    public void navigateToLoginPage(String url) {
         driver.get(url);
     }
     
@@ -43,24 +43,6 @@ public class LoginPage {
         loginBtn.click();
     }
     
-    public boolean isDashboardDisplayed() {
-        try {
-            wait.until(ExpectedConditions.urlContains("/dashboard"));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    public String getErrorMessage() {
-        try {
-            WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
-            return error.getText();
-        } catch (Exception e) {
-            return "";
-        }
-    }
-    
     public boolean isErrorMessageDisplayed() {
         try {
             WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
@@ -68,5 +50,27 @@ public class LoginPage {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    public String getErrorMessageText() {
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+        return error.getText();
+    }
+    
+    public boolean isOnDashboard() {
+        try {
+            wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("/dashboard"),
+                ExpectedConditions.urlContains("/home"),
+                ExpectedConditions.urlContains("/c/")
+            ));
+            return !driver.getCurrentUrl().contains("/login");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }
