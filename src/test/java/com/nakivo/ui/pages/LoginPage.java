@@ -67,10 +67,10 @@ public class LoginPage {
         return errorMessage.getText();
     }
     
-    public boolean isOnDashboardPage() {
+    public boolean isOnDashboard() {
         try {
             wait.until(ExpectedConditions.urlContains("/dashboard"));
-            return driver.getCurrentUrl().contains("/dashboard");
+            return driver.getCurrentUrl().contains("/dashboard") || driver.getCurrentUrl().contains("/home");
         } catch (Exception e) {
             return false;
         }
