@@ -18,8 +18,9 @@ public class LoginTest {
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--ignore-certificate-errors");
-        options.addArguments("--disable-web-security");
         options.addArguments("--allow-insecure-localhost");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--no-sandbox");
         
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
@@ -29,7 +30,7 @@ public class LoginTest {
     @Test(description = "Test Case 1: Successful login")
     public void testSuccessfulLogin() {
         // Step 1: Open the login page
-        loginPage.openLoginPage(LOGIN_URL);
+        loginPage.navigateToLoginPage(LOGIN_URL);
         
         // Step 2: Enter username
         loginPage.enterUsername("user");
@@ -41,26 +42,33 @@ public class LoginTest {
         loginPage.clickLoginButton();
         
         // Step 5: Verify user is redirected to dashboard
-        Assert.assertTrue(loginPage.isDashboardDisplayed(), "User should be redirected to dashboard after successful login");
+        Assert.assertTrue(loginPage.isOnDashboard(), 
+            "User should be redirected to dashboard after successful login");
+        Assert.assertFalse(loginPage.getCurrentUrl().contains("/login"), 
+            "URL should not contain /login after successful login");
     }
     
     @Test(description = "Test Case 2: Unsuccessful login with invalid credentials")
-    public void testUnsuccessfulLogin() {
+    public void testUnsuccessfulLoginInvalidCredentials() {
         // Step 1: Open the login page
-        loginPage.openLoginPage(LOGIN_URL);
+        loginPage.navigateToLoginPage(LOGIN_URL);
         
-        // Step 2: Enter wrong username
+        // Step 2: Enter invalid username
         loginPage.enterUsername("wronguser");
         
-        // Step 3: Enter wrong password
+        // Step 3: Enter invalid password
         loginPage.enterPassword("wrongpassword");
         
         // Step 4: Click the Log In button
         loginPage.clickLoginButton();
         
         // Step 5: Verify error message is displayed
-        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), "Error message should be displayed for invalid credentials");
-        Assert.assertEquals(loginPage.getErrorMessage(), "Invalid credentials", "Error message should indicate invalid credentials");
+        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), 
+            "Error message should be displayed for invalid credentials");
+        Assert.assertTrue(loginPage.getErrorMessageText().contains("Invalid credentials"), 
+            "Error message should contain 'Invalid credentials'");
+        Assert.assertTrue(loginPage.getCurrentUrl().contains("/login"), 
+            "User should remain on login page after failed login");
     }
     
     @AfterMethod
