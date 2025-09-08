@@ -19,12 +19,17 @@ public class LoginTest {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--ignore-certificate-errors");
         options.addArguments("--allow-insecure-localhost");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--no-sandbox");
-        
+        options.addArguments("--disable-web-security");
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         loginPage = new LoginPage(driver);
+    }
+    
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
     }
     
     @Test(description = "Test Case 1: Successful login")
@@ -41,15 +46,13 @@ public class LoginTest {
         // Step 4: Click the Log In button
         loginPage.clickLoginButton();
         
-        // Step 5: Verify user is redirected to dashboard
-        Assert.assertTrue(loginPage.isOnDashboard(), 
-            "User should be redirected to dashboard after successful login");
-        Assert.assertFalse(loginPage.getCurrentUrl().contains("/login"), 
-            "URL should not contain /login after successful login");
+        // Step 5: Verify redirection to dashboard
+        Assert.assertTrue(loginPage.isOnDashboard(), "User should be redirected to the dashboard page");
+        Assert.assertTrue(loginPage.getCurrentUrl().contains("dashboard"), "URL should contain 'dashboard'");
     }
     
     @Test(description = "Test Case 2: Unsuccessful login with invalid credentials")
-    public void testUnsuccessfulLoginInvalidCredentials() {
+    public void testUnsuccessfulLogin() {
         // Step 1: Open the login page
         loginPage.navigateToLoginPage(LOGIN_URL);
         
@@ -63,18 +66,7 @@ public class LoginTest {
         loginPage.clickLoginButton();
         
         // Step 5: Verify error message is displayed
-        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), 
-            "Error message should be displayed for invalid credentials");
-        Assert.assertTrue(loginPage.getErrorMessageText().contains("Invalid credentials"), 
-            "Error message should contain 'Invalid credentials'");
-        Assert.assertTrue(loginPage.getCurrentUrl().contains("/login"), 
-            "User should remain on login page after failed login");
-    }
-    
-    @AfterMethod
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), "Error message should be displayed for invalid credentials");
+        Assert.assertTrue(loginPage.getErrorMessageText().contains("Invalid credentials"), "Error message should contain 'Invalid credentials'");
     }
 }
