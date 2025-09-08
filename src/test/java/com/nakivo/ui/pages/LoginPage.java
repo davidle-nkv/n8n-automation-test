@@ -22,9 +22,8 @@ public class LoginPage {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
     
-    public void navigateToLoginPage() {
-        driver.get("https://localhost:4443/c/login");
-        wait.until(ExpectedConditions.presenceOfElementLocated(usernameField));
+    public void navigateToLoginPage(String url) {
+        driver.get(url);
     }
     
     public void enterUsername(String username) {
@@ -58,9 +57,20 @@ public class LoginPage {
         return error.getText();
     }
     
-    public void login(String username, String password) {
-        enterUsername(username);
-        enterPassword(password);
-        clickLoginButton();
+    public boolean isOnDashboard() {
+        try {
+            wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("/dashboard"),
+                ExpectedConditions.urlContains("/home"),
+                ExpectedConditions.urlContains("/main")
+            ));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }
