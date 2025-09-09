@@ -1,6 +1,7 @@
 package com.nakivo.ui.tests;
 
 import com.nakivo.ui.pages.LoginPage;
+import com.nakivo.ui.pages.DashboardPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -12,45 +13,62 @@ import org.testng.annotations.Test;
 public class LoginTest {
     private WebDriver driver;
     private LoginPage loginPage;
-    private static final String LOGIN_URL = "https://localhost:4443/c/login";
+    private DashboardPage dashboardPage;
+    private final String LOGIN_URL = "https://localhost:4443/c/login";
     
     @BeforeMethod
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--ignore-certificate-errors");
         options.addArguments("--allow-insecure-localhost");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-web-security");
         
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
+        
         loginPage = new LoginPage(driver);
+        dashboardPage = new DashboardPage(driver);
     }
     
-    @Test(description = "Test Case 1: Successful login with valid credentials")
+    @Test(description = "Test Case 1: Successful login")
     public void testSuccessfulLogin() {
+        // Step 1: Open the login page
         loginPage.navigateToLoginPage(LOGIN_URL);
+        
+        // Step 2: Enter username
         loginPage.enterUsername("user");
+        
+        // Step 3: Enter password
         loginPage.enterPassword("user");
+        
+        // Step 4: Click the Log In button
         loginPage.clickLoginButton();
         
-        Assert.assertTrue(loginPage.isOnDashboard(), 
+        // Step 5: Verify user is redirected to dashboard
+        Assert.assertTrue(dashboardPage.isUserOnDashboard(), 
             "User should be redirected to dashboard after successful login");
     }
     
     @Test(description = "Test Case 2: Unsuccessful login with invalid credentials")
-    public void testUnsuccessfulLogin() {
+    public void testUnsuccessfulLoginInvalidPassword() {
+        // Step 1: Open the login page
         loginPage.navigateToLoginPage(LOGIN_URL);
+        
+        // Step 2: Enter wrong username
         loginPage.enterUsername("wronguser");
+        
+        // Step 3: Enter wrong password
         loginPage.enterPassword("wrongpassword");
+        
+        // Step 4: Click the Log In button
         loginPage.clickLoginButton();
         
+        // Step 5: Verify error message is displayed
         Assert.assertTrue(loginPage.isErrorMessageDisplayed(), 
             "Error message should be displayed for invalid credentials");
         
         String errorText = loginPage.getErrorMessageText();
-        Assert.assertTrue(errorText.toLowerCase().contains("invalid") || 
-            errorText.toLowerCase().contains("credentials"), 
+        Assert.assertTrue(errorText.contains("Invalid credentials"), 
             "Error message should contain 'Invalid credentials'");
     }
     
